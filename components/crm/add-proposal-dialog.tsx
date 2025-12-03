@@ -18,9 +18,26 @@ interface School {
   name: string
 }
 
-export function AddProposalDialog({ schools }: { schools: School[] }) {
+interface Brand {
+  id: string
+  name: string
+}
+
+interface Product {
+  id: string
+  name: string
+  brand: string
+  sku: string
+}
+
+export function AddProposalDialog({
+  schools,
+  brands,
+  products,
+}: { schools: School[]; brands: Brand[]; products: Product[] }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [selectedBrand, setSelectedBrand] = useState<string>("")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,6 +55,8 @@ export function AddProposalDialog({ schools }: { schools: School[] }) {
     }
   }
 
+  const filteredProducts = selectedBrand ? products.filter((p) => p.brand === selectedBrand) : products
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -48,14 +67,16 @@ export function AddProposalDialog({ schools }: { schools: School[] }) {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Yeni Teklif Oluştur</DialogTitle>
+          <DialogTitle className="text-2xl font-extrabold text-black">Yeni Teklif Oluştur</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="school_id">Okul *</Label>
+            <Label htmlFor="school_id" className="text-black font-bold drop-shadow-sm">
+              Kurum *
+            </Label>
             <Select name="school_id" required>
               <SelectTrigger>
-                <SelectValue placeholder="Okul seçin" />
+                <SelectValue placeholder="Kurum seçin" />
               </SelectTrigger>
               <SelectContent>
                 {schools.map((school) => (
@@ -67,26 +88,72 @@ export function AddProposalDialog({ schools }: { schools: School[] }) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Teklif Başlığı *</Label>
+              <Label htmlFor="title" className="text-black font-bold drop-shadow-sm">
+                Teklif Başlığı *
+              </Label>
               <Input name="title" placeholder="Teklif başlığı" required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="code">Teklif Kodu *</Label>
+              <Label htmlFor="code" className="text-black font-bold drop-shadow-sm">
+                Teklif Kodu *
+              </Label>
               <Input name="code" placeholder="TKL-2024-001" required />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Tutar</Label>
+              <Label htmlFor="brand" className="text-black font-bold drop-shadow-sm">
+                Marka
+              </Label>
+              <Select name="brand" value={selectedBrand} onValueChange={setSelectedBrand}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Marka seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {brands.map((brand) => (
+                    <SelectItem key={brand.id} value={brand.name}>
+                      {brand.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="product" className="text-black font-bold drop-shadow-sm">
+                Ürün
+              </Label>
+              <Select name="product" disabled={!selectedBrand}>
+                <SelectTrigger>
+                  <SelectValue placeholder={selectedBrand ? "Ürün seçin" : "Önce marka seçin"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredProducts.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.name} ({product.sku})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount" className="text-black font-bold drop-shadow-sm">
+                Tutar
+              </Label>
               <Input type="number" step="0.01" name="amount" placeholder="0.00" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currency">Para Birimi</Label>
+              <Label htmlFor="currency" className="text-black font-bold drop-shadow-sm">
+                Para Birimi
+              </Label>
               <Select name="currency" defaultValue="TRY">
                 <SelectTrigger>
                   <SelectValue />
@@ -101,7 +168,9 @@ export function AddProposalDialog({ schools }: { schools: School[] }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Durum *</Label>
+            <Label htmlFor="status" className="text-black font-bold drop-shadow-sm">
+              Durum *
+            </Label>
             <Select name="status" required defaultValue="DRAFT">
               <SelectTrigger>
                 <SelectValue />
@@ -116,34 +185,44 @@ export function AddProposalDialog({ schools }: { schools: School[] }) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="validity_date">Geçerlilik Tarihi</Label>
+              <Label htmlFor="validity_date" className="text-black font-bold drop-shadow-sm">
+                Geçerlilik Tarihi
+              </Label>
               <Input type="date" name="validity_date" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="start_date">Başlangıç</Label>
+              <Label htmlFor="start_date" className="text-black font-bold drop-shadow-sm">
+                Başlangıç
+              </Label>
               <Input type="date" name="start_date" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="end_date">Bitiş</Label>
+              <Label htmlFor="end_date" className="text-black font-bold drop-shadow-sm">
+                Bitiş
+              </Label>
               <Input type="date" name="end_date" />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="payment_terms">Ödeme Koşulları</Label>
+            <Label htmlFor="payment_terms" className="text-black font-bold drop-shadow-sm">
+              Ödeme Koşulları
+            </Label>
             <Textarea name="payment_terms" placeholder="Ödeme koşulları..." rows={2} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="warranty">Garanti</Label>
+            <Label htmlFor="warranty" className="text-black font-bold drop-shadow-sm">
+              Garanti
+            </Label>
             <Input name="warranty" placeholder="2 yıl garanti" />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
               İptal
             </Button>

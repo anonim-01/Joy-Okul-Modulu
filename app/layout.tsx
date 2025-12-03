@@ -2,8 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
 import { GsapProvider } from "@/components/gsap-provider"
 import { TransitionProvider } from "@/components/transition-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -22,14 +20,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={inter.className}>
-      <body className="bg-[#0a0a0a] text-white">
+    <html lang="tr" className={inter.className}>
+      <body className="bg-gradient-to-br from-gray-50 via-white to-blue-50/20 text-gray-900">
         <GsapProvider>
           <TransitionProvider>
-            <Header />
-            <main className="pt-24">{children}</main>
-            <Footer />
-            <Toaster />
+            <main>{children}</main>
+            <Toaster position="top-center" />
           </TransitionProvider>
         </GsapProvider>
       </body>

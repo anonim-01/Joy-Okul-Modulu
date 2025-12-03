@@ -2,21 +2,26 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import type { SchoolInsert, SchoolUpdate } from "@/lib/types/database"
 
 export async function addSchool(formData: FormData) {
   const supabase = await createClient()
 
-  const schoolData = {
+  // Generate unique code
+  const code = `SCH-${Date.now()}`
+
+  const schoolData: SchoolInsert = {
     name: formData.get("name") as string,
+    code,
     neighborhood: formData.get("neighborhood") as string,
-    type: formData.get("type") as string,
-    category: formData.get("category") as string,
+    type: formData.get("type") as any,
+    category: formData.get("category") as any,
     manager_name: formData.get("manager_name") as string,
     manager_phone: formData.get("manager_phone") as string,
     phone: formData.get("phone") as string,
     email: formData.get("email") as string,
     address: formData.get("address") as string,
-    student_count: Number.parseInt(formData.get("student_count") as string) || 0,
+    student_count: formData.get("student_count") ? Number.parseInt(formData.get("student_count") as string) : null,
     status: "NEW",
     visit_status: "NONE",
   }
@@ -34,19 +39,19 @@ export async function addSchool(formData: FormData) {
 export async function updateSchool(id: string, formData: FormData) {
   const supabase = await createClient()
 
-  const schoolData = {
+  const schoolData: SchoolUpdate = {
     name: formData.get("name") as string,
     neighborhood: formData.get("neighborhood") as string,
-    type: formData.get("type") as string,
-    category: formData.get("category") as string,
+    type: formData.get("type") as any,
+    category: formData.get("category") as any,
     manager_name: formData.get("manager_name") as string,
     manager_phone: formData.get("manager_phone") as string,
     phone: formData.get("phone") as string,
     email: formData.get("email") as string,
     address: formData.get("address") as string,
-    student_count: Number.parseInt(formData.get("student_count") as string) || 0,
-    status: formData.get("status") as string,
-    visit_status: formData.get("visit_status") as string,
+    student_count: formData.get("student_count") ? Number.parseInt(formData.get("student_count") as string) : null,
+    status: formData.get("status") as any,
+    visit_status: formData.get("visit_status") as any,
     notes: formData.get("notes") as string,
     deficiencies: formData.get("deficiencies") as string,
   }

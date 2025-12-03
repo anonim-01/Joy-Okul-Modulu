@@ -42,6 +42,9 @@ const PENDIK_NEIGHBORHOODS = [
 export function AddSchoolDialog() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [neighborhood, setNeighborhood] = useState("")
+  const [type, setType] = useState("")
+  const [category, setCategory] = useState("")
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -49,15 +52,21 @@ export function AddSchoolDialog() {
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    formData.set("neighborhood", neighborhood)
+    formData.set("type", type)
+    formData.set("category", category)
 
     try {
       await addSchool(formData)
       setOpen(false)
       router.refresh()
-      toast.success("Okul başarıyla eklendi!")
+      toast.success("Kurum başarıyla eklendi!")
+      setNeighborhood("")
+      setType("")
+      setCategory("")
       ;(e.target as HTMLFormElement).reset()
     } catch (error) {
-      toast.error("Okul eklenirken hata oluştu")
+      toast.error("Kurum eklenirken hata oluştu")
     } finally {
       setLoading(false)
     }
@@ -66,39 +75,45 @@ export function AddSchoolDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg">
+        <Button size="lg" className="gap-2 bg-black hover:bg-gray-800 text-white shadow-xl">
           <Plus className="w-5 h-5" />
-          Yeni Okul Ekle
+          Yeni Kurum Ekle
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl border-2 border-gray-200">
         <DialogHeader>
-          <DialogTitle className="text-2xl text-gray-900">Yeni Okul Ekle</DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Yeni bir okul eklemek için aşağıdaki formu doldurun.
+          <DialogTitle className="text-2xl font-extrabold text-black drop-shadow-md">Yeni Kurum Ekle</DialogTitle>
+          <DialogDescription className="text-gray-800 font-semibold drop-shadow-sm">
+            Yeni bir kurum eklemek için aşağıdaki formu doldurun.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name" className="text-gray-900 font-semibold">
-                Okul Adı *
+              <Label htmlFor="name" className="text-black font-extrabold drop-shadow-md text-base">
+                Kurum Adı *
               </Label>
-              <Input id="name" name="name" placeholder="Örn: Pendik Anadolu Lisesi" required className="bg-white" />
+              <Input
+                id="name"
+                name="name"
+                placeholder="Örn: Pendik Anadolu Lisesi"
+                required
+                className="bg-white border-gray-300 shadow-sm text-black font-medium"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="neighborhood" className="text-gray-900 font-semibold">
+                <Label htmlFor="neighborhood" className="text-black font-extrabold drop-shadow-md text-base">
                   Mahalle *
                 </Label>
-                <Select name="neighborhood" required>
-                  <SelectTrigger className="bg-white">
+                <Select name="neighborhood" required value={neighborhood} onValueChange={setNeighborhood}>
+                  <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                     <SelectValue placeholder="Mahalle seçin" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white">
                     {PENDIK_NEIGHBORHOODS.map((n) => (
-                      <SelectItem key={n} value={n}>
+                      <SelectItem key={n} value={n} className="text-black font-medium">
                         {n}
                       </SelectItem>
                     ))}
@@ -107,17 +122,23 @@ export function AddSchoolDialog() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="type" className="text-gray-900 font-semibold">
+                <Label htmlFor="type" className="text-black font-extrabold drop-shadow-md text-base">
                   Tür *
                 </Label>
-                <Select name="type" required>
-                  <SelectTrigger className="bg-white">
+                <Select name="type" required value={type} onValueChange={setType}>
+                  <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                     <SelectValue placeholder="Tür seçin" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PUBLIC">Devlet</SelectItem>
-                    <SelectItem value="PRIVATE">Özel</SelectItem>
-                    <SelectItem value="FOUNDATION">Vakıf</SelectItem>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="PUBLIC" className="text-black font-medium">
+                      Devlet
+                    </SelectItem>
+                    <SelectItem value="PRIVATE" className="text-black font-medium">
+                      Özel
+                    </SelectItem>
+                    <SelectItem value="FOUNDATION" className="text-black font-medium">
+                      Vakıf
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -125,26 +146,38 @@ export function AddSchoolDialog() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="category" className="text-gray-900 font-semibold">
+                <Label htmlFor="category" className="text-black font-extrabold drop-shadow-md text-base">
                   Kategori *
                 </Label>
-                <Select name="category" required>
-                  <SelectTrigger className="bg-white">
+                <Select name="category" required value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                     <SelectValue placeholder="Kategori seçin" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PRIMARY">İlkokul</SelectItem>
-                    <SelectItem value="MIDDLE">Ortaokul</SelectItem>
-                    <SelectItem value="HIGH">Lise</SelectItem>
-                    <SelectItem value="VOCATIONAL">Meslek Lisesi</SelectItem>
-                    <SelectItem value="UNIVERSITY">Üniversite</SelectItem>
-                    <SelectItem value="OTHER">Diğer</SelectItem>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="PRIMARY" className="text-black font-medium">
+                      İlkokul
+                    </SelectItem>
+                    <SelectItem value="MIDDLE" className="text-black font-medium">
+                      Ortaokul
+                    </SelectItem>
+                    <SelectItem value="HIGH" className="text-black font-medium">
+                      Lise
+                    </SelectItem>
+                    <SelectItem value="VOCATIONAL" className="text-black font-medium">
+                      Meslek Lisesi
+                    </SelectItem>
+                    <SelectItem value="UNIVERSITY" className="text-black font-medium">
+                      Üniversite
+                    </SelectItem>
+                    <SelectItem value="OTHER" className="text-black font-medium">
+                      Diğer
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="student_count" className="text-gray-900 font-semibold">
+                <Label htmlFor="student_count" className="text-black font-extrabold drop-shadow-md text-base">
                   Öğrenci Sayısı
                 </Label>
                 <Input
@@ -153,62 +186,98 @@ export function AddSchoolDialog() {
                   type="number"
                   placeholder="0"
                   defaultValue={0}
-                  className="bg-white"
+                  className="bg-white border-gray-300 shadow-sm text-black font-medium"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="manager_name" className="text-gray-900 font-semibold">
+                <Label htmlFor="manager_name" className="text-black font-extrabold drop-shadow-md text-base">
                   Müdür Adı
                 </Label>
-                <Input id="manager_name" name="manager_name" placeholder="Örn: Ahmet Yılmaz" className="bg-white" />
+                <Input
+                  id="manager_name"
+                  name="manager_name"
+                  placeholder="Örn: Ahmet Yılmaz"
+                  className="bg-white border-gray-300 shadow-sm text-black font-medium"
+                />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="manager_phone" className="text-gray-900 font-semibold">
+                <Label htmlFor="manager_phone" className="text-black font-extrabold drop-shadow-md text-base">
                   Müdür Telefonu
                 </Label>
-                <Input id="manager_phone" name="manager_phone" placeholder="0532 XXX XX XX" className="bg-white" />
+                <Input
+                  id="manager_phone"
+                  name="manager_phone"
+                  placeholder="0532 XXX XX XX"
+                  className="bg-white border-gray-300 shadow-sm text-black font-medium"
+                />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="phone" className="text-gray-900 font-semibold">
-                  Okul Telefonu
+                <Label htmlFor="phone" className="text-black font-extrabold drop-shadow-md text-base">
+                  Kurum Telefonu
                 </Label>
-                <Input id="phone" name="phone" placeholder="0216 XXX XX XX" className="bg-white" />
+                <Input
+                  id="phone"
+                  name="phone"
+                  placeholder="0216 XXX XX XX"
+                  className="bg-white border-gray-300 shadow-sm text-black font-medium"
+                />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="email" className="text-gray-900 font-semibold">
+                <Label htmlFor="email" className="text-black font-extrabold drop-shadow-md text-base">
                   E-posta
                 </Label>
-                <Input id="email" name="email" type="email" placeholder="okul@example.com" className="bg-white" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="kurum@example.com"
+                  className="bg-white border-gray-300 shadow-sm text-black font-medium"
+                />
               </div>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="address" className="text-gray-900 font-semibold">
+              <Label htmlFor="address" className="text-black font-extrabold drop-shadow-md text-base">
                 Adres
               </Label>
-              <Input id="address" name="address" placeholder="Tam adres" className="bg-white" />
+              <Input
+                id="address"
+                name="address"
+                placeholder="Tam adres"
+                className="bg-white border-gray-300 shadow-sm text-black font-medium"
+              />
             </div>
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+              className="w-full sm:w-auto border-2 border-gray-300 text-black font-bold shadow-md"
+            >
               İptal
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-black hover:bg-gray-800 text-white w-full sm:w-auto shadow-xl font-bold"
+            >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Ekleniyor...
                 </>
               ) : (
-                "Okul Ekle"
+                "Kurum Ekle"
               )}
             </Button>
           </DialogFooter>

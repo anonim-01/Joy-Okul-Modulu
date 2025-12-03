@@ -26,6 +26,10 @@ interface User {
 export function AddVisitDialog({ schools, users }: { schools: School[]; users: User[] }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [schoolId, setSchoolId] = useState("")
+  const [visitorId, setVisitorId] = useState("")
+  const [visitType, setVisitType] = useState("")
+  const [status, setStatus] = useState("PLANNED")
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -33,9 +37,18 @@ export function AddVisitDialog({ schools, users }: { schools: School[]; users: U
 
     try {
       const formData = new FormData(e.currentTarget)
+      formData.set("school_id", schoolId)
+      formData.set("visitor_id", visitorId)
+      formData.set("visit_type", visitType)
+      formData.set("status", status)
+
       await addVisit(formData)
       toast.success("Ziyaret başarıyla eklendi")
       setOpen(false)
+      setSchoolId("")
+      setVisitorId("")
+      setVisitType("")
+      setStatus("PLANNED")
     } catch (error) {
       toast.error("Ziyaret eklenirken hata oluştu")
     } finally {
@@ -46,26 +59,28 @@ export function AddVisitDialog({ schools, users }: { schools: School[]; users: U
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg w-full sm:w-auto">
+        <Button size="lg" className="gap-2 bg-black hover:bg-gray-800 text-white shadow-xl w-full sm:w-auto">
           <Plus className="w-5 h-5" />
           Yeni Ziyaret Ekle
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl border-2 border-gray-200">
         <DialogHeader>
-          <DialogTitle>Yeni Ziyaret Ekle</DialogTitle>
+          <DialogTitle className="text-2xl font-extrabold text-black drop-shadow-md">Yeni Ziyaret Ekle</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="school_id">Okul *</Label>
-              <Select name="school_id" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Okul seçin" />
+              <Label htmlFor="school_id" className="text-black font-extrabold drop-shadow-md text-base">
+                Kurum *
+              </Label>
+              <Select name="school_id" required value={schoolId} onValueChange={setSchoolId}>
+                <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
+                  <SelectValue placeholder="Kurum seçin" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {schools.map((school) => (
-                    <SelectItem key={school.id} value={school.id}>
+                    <SelectItem key={school.id} value={school.id} className="text-black font-medium">
                       {school.name}
                     </SelectItem>
                   ))}
@@ -74,14 +89,16 @@ export function AddVisitDialog({ schools, users }: { schools: School[]; users: U
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="visitor_id">Ziyaretçi *</Label>
-              <Select name="visitor_id" required>
-                <SelectTrigger>
+              <Label htmlFor="visitor_id" className="text-black font-extrabold drop-shadow-md text-base">
+                Ziyaretçi *
+              </Label>
+              <Select name="visitor_id" required value={visitorId} onValueChange={setVisitorId}>
+                <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                   <SelectValue placeholder="Ziyaretçi seçin" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
+                    <SelectItem key={user.id} value={user.id} className="text-black font-medium">
                       {user.name}
                     </SelectItem>
                   ))}
@@ -90,74 +107,146 @@ export function AddVisitDialog({ schools, users }: { schools: School[]; users: U
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="visit_date">Ziyaret Tarihi *</Label>
-              <Input type="date" name="visit_date" required />
+              <Label htmlFor="visit_date" className="text-black font-extrabold drop-shadow-md text-base">
+                Ziyaret Tarihi *
+              </Label>
+              <Input
+                type="date"
+                name="visit_date"
+                required
+                className="bg-white border-gray-300 shadow-sm text-black font-medium"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="visit_type">Ziyaret Tipi *</Label>
-              <Select name="visit_type" required>
-                <SelectTrigger>
+              <Label htmlFor="visit_type" className="text-black font-extrabold drop-shadow-md text-base">
+                Ziyaret Tipi *
+              </Label>
+              <Select name="visit_type" required value={visitType} onValueChange={setVisitType}>
+                <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                   <SelectValue placeholder="Tip seçin" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="FIRST_CONTACT">İlk Görüşme</SelectItem>
-                  <SelectItem value="PRESENTATION">Sunum</SelectItem>
-                  <SelectItem value="DEMO">Demo</SelectItem>
-                  <SelectItem value="NEGOTIATION">Görüşme</SelectItem>
-                  <SelectItem value="FOLLOWUP">Takip</SelectItem>
+                <SelectContent className="bg-white">
+                  <SelectItem value="FIRST_CONTACT" className="text-black font-medium">
+                    İlk Görüşme
+                  </SelectItem>
+                  <SelectItem value="PRESENTATION" className="text-black font-medium">
+                    Sunum
+                  </SelectItem>
+                  <SelectItem value="DEMO" className="text-black font-medium">
+                    Demo
+                  </SelectItem>
+                  <SelectItem value="NEGOTIATION" className="text-black font-medium">
+                    Görüşme
+                  </SelectItem>
+                  <SelectItem value="FOLLOWUP" className="text-black font-medium">
+                    Takip
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Durum *</Label>
-            <Select name="status" required defaultValue="PLANNED">
-              <SelectTrigger>
+            <Label htmlFor="status" className="text-black font-extrabold drop-shadow-md text-base">
+              Durum *
+            </Label>
+            <Select name="status" required value={status} onValueChange={setStatus}>
+              <SelectTrigger className="bg-white border-gray-300 shadow-sm text-black font-medium">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PLANNED">Planlandı</SelectItem>
-                <SelectItem value="COMPLETED">Tamamlandı</SelectItem>
-                <SelectItem value="CANCELLED">İptal</SelectItem>
-                <SelectItem value="POSTPONED">Ertelendi</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="PLANNED" className="text-black font-medium">
+                  Planlandı
+                </SelectItem>
+                <SelectItem value="COMPLETED" className="text-black font-medium">
+                  Tamamlandı
+                </SelectItem>
+                <SelectItem value="CANCELLED" className="text-black font-medium">
+                  İptal
+                </SelectItem>
+                <SelectItem value="POSTPONED" className="text-black font-medium">
+                  Ertelendi
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="participants">Katılımcılar</Label>
-            <Input name="participants" placeholder="Virgülle ayırın: Ahmet, Mehmet, Ayşe" />
+            <Label htmlFor="participants" className="text-black font-extrabold drop-shadow-md text-base">
+              Katılımcılar
+            </Label>
+            <Input
+              name="participants"
+              placeholder="Virgülle ayırın: Ahmet, Mehmet, Ayşe"
+              className="bg-white border-gray-300 shadow-sm text-black font-medium"
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="summary">Özet</Label>
-            <Textarea name="summary" placeholder="Ziyaret özeti..." rows={3} />
+            <Label htmlFor="summary" className="text-black font-extrabold drop-shadow-md text-base">
+              Özet
+            </Label>
+            <Textarea
+              name="summary"
+              placeholder="Ziyaret özeti..."
+              rows={3}
+              className="bg-white border-gray-300 shadow-sm text-black font-medium"
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="findings">Bulgular</Label>
-            <Textarea name="findings" placeholder="Tespit edilen bulgular..." rows={3} />
+            <Label htmlFor="findings" className="text-black font-extrabold drop-shadow-md text-base">
+              Bulgular
+            </Label>
+            <Textarea
+              name="findings"
+              placeholder="Tespit edilen bulgular..."
+              rows={3}
+              className="bg-white border-gray-300 shadow-sm text-black font-medium"
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="action_items">Aksiyon Maddeleri</Label>
-            <Textarea name="action_items" placeholder="Yapılacaklar..." rows={2} />
+            <Label htmlFor="action_items" className="text-black font-extrabold drop-shadow-md text-base">
+              Aksiyon Maddeleri
+            </Label>
+            <Textarea
+              name="action_items"
+              placeholder="Yapılacaklar..."
+              rows={2}
+              className="bg-white border-gray-300 shadow-sm text-black font-medium"
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="next_steps">Sonraki Adımlar</Label>
-            <Textarea name="next_steps" placeholder="Sonraki adımlar..." rows={2} />
+            <Label htmlFor="next_steps" className="text-black font-extrabold drop-shadow-md text-base">
+              Sonraki Adımlar
+            </Label>
+            <Textarea
+              name="next_steps"
+              placeholder="Sonraki adımlar..."
+              rows={2}
+              className="bg-white border-gray-300 shadow-sm text-black font-medium"
+            />
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="flex-1 border-2 border-gray-300 text-black font-bold shadow-md"
+            >
               İptal
             </Button>
-            <Button type="submit" disabled={loading} className="flex-1 bg-blue-600 hover:bg-blue-700">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-black hover:bg-gray-800 text-white shadow-xl font-bold"
+            >
               {loading ? "Ekleniyor..." : "Ekle"}
             </Button>
           </div>

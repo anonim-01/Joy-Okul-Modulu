@@ -1,8 +1,9 @@
 import { createBrowserClient } from "@supabase/ssr"
+import type { Database } from "@/lib/types/fluent-crm-database"
 
-let client: ReturnType<typeof createBrowserClient> | null = null
+let client: ReturnType<typeof createBrowserClient<Database>> | null = null
 
-export function createClient() {
+export function createFluentCRMClient() {
   if (client) return client
 
   const urlKey = "NEXT_PUBLIC" + "_CMRSUPABASE" + "_URL"
@@ -11,7 +12,7 @@ export function createClient() {
   const url = process.env[urlKey]!
   const key = process.env[anonKey]!
 
-  client = createBrowserClient(url, key)
+  client = createBrowserClient<Database>(url, key)
 
   return client
 }
