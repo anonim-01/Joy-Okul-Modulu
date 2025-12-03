@@ -15,3 +15,17 @@ export function createClient() {
 
   return client
 }
+
+export function getSupabase() {
+  if (typeof window === "undefined") {
+    throw new Error("Supabase client can only be used in the browser")
+  }
+  return createClient()
+}
+
+// Keep named export for backwards compatibility but make it lazy
+export const supabase = new Proxy({} as ReturnType<typeof createBrowserClient>, {
+  get(target, prop) {
+    return getSupabase()[prop as keyof ReturnType<typeof createBrowserClient>]
+  },
+})

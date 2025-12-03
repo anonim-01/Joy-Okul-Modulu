@@ -7,18 +7,15 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { createBrowserClient } from "@supabase/ssr"
+import { supabase } from "@/lib/supabase/client"
 import type { Contact } from "@/lib/types/crm-database"
+
+export const dynamic = "force-dynamic"
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  )
 
   useEffect(() => {
     fetchContacts()
@@ -31,7 +28,7 @@ export default function ContactsPage() {
       if (error) throw error
       setContacts(data || [])
     } catch (error) {
-      console.error("[v0] Error fetching contacts:", error)
+      console.error("Error fetching contacts:", error)
     } finally {
       setLoading(false)
     }
