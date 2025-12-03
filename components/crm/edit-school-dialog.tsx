@@ -57,7 +57,7 @@ export function EditSchoolDialog({ school, open, onOpenChange }: EditSchoolDialo
     const formData = new FormData(e.currentTarget)
 
     try {
-      await updateSchool(Number(school.id), formData)
+      await updateSchool(school.id, formData)
       onOpenChange(false)
       router.refresh()
       toast.success("Okul başarıyla güncellendi!")
@@ -112,8 +112,9 @@ export function EditSchoolDialog({ school, open, onOpenChange }: EditSchoolDialo
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Devlet">Devlet</SelectItem>
-                    <SelectItem value="Özel">Özel</SelectItem>
+                    <SelectItem value="PUBLIC">Devlet</SelectItem>
+                    <SelectItem value="PRIVATE">Özel</SelectItem>
+                    <SelectItem value="FOUNDATION">Vakıf</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -129,11 +130,13 @@ export function EditSchoolDialog({ school, open, onOpenChange }: EditSchoolDialo
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="new">Yeni</SelectItem>
-                    <SelectItem value="contacted">İletişimde</SelectItem>
-                    <SelectItem value="needs_analysis">Analiz Gerekli</SelectItem>
-                    <SelectItem value="proposal_sent">Teklif Gönderildi</SelectItem>
-                    <SelectItem value="won">Kazanıldı</SelectItem>
+                    <SelectItem value="NEW">Yeni</SelectItem>
+                    <SelectItem value="CONTACTED">İletişimde</SelectItem>
+                    <SelectItem value="NEEDS_ANALYSIS">Analiz Gerekli</SelectItem>
+                    <SelectItem value="PROPOSAL_SENT">Teklif Gönderildi</SelectItem>
+                    <SelectItem value="NEGOTIATION">Müzakere</SelectItem>
+                    <SelectItem value="WON">Kazanıldı</SelectItem>
+                    <SelectItem value="LOST">Kaybedildi</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -147,26 +150,47 @@ export function EditSchoolDialog({ school, open, onOpenChange }: EditSchoolDialo
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Ziyaret Edilmedi</SelectItem>
-                    <SelectItem value="manager">Müdürle Görüşüldü</SelectItem>
-                    <SelectItem value="technical">Teknik Personel</SelectItem>
-                    <SelectItem value="failed">Yetkili Bulunamadı</SelectItem>
+                    <SelectItem value="NONE">Ziyaret Edilmedi</SelectItem>
+                    <SelectItem value="PLANNED">Planlandı</SelectItem>
+                    <SelectItem value="VISITED_MANAGER">Müdürle Görüşüldü</SelectItem>
+                    <SelectItem value="VISITED_TECHNICAL">Teknik Personel</SelectItem>
+                    <SelectItem value="FAILED_NO_CONTACT">Yetkili Bulunamadı</SelectItem>
+                    <SelectItem value="FOLLOWUP_NEEDED">Takip Gerekli</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="manager" className="text-gray-900 font-semibold">
-                Müdür Adı
-              </Label>
-              <Input id="manager" name="manager" defaultValue={school.manager || ""} className="bg-white" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="manager_name" className="text-gray-900 font-semibold">
+                  Müdür Adı
+                </Label>
+                <Input
+                  id="manager_name"
+                  name="manager_name"
+                  defaultValue={school.manager_name || ""}
+                  className="bg-white"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="manager_phone" className="text-gray-900 font-semibold">
+                  Müdür Telefonu
+                </Label>
+                <Input
+                  id="manager_phone"
+                  name="manager_phone"
+                  defaultValue={school.manager_phone || ""}
+                  className="bg-white"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="phone" className="text-gray-900 font-semibold">
-                  Telefon
+                  Okul Telefonu
                 </Label>
                 <Input id="phone" name="phone" defaultValue={school.phone || ""} className="bg-white" />
               </div>

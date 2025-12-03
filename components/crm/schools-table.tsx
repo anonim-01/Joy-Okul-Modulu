@@ -108,9 +108,9 @@ export function SchoolsTable({ schools }: SchoolsTableProps) {
                           <span className="line-clamp-1">{school.email}</span>
                         </div>
                       )}
-                      {school.manager && (
+                      {school.manager_name && (
                         <div className="text-gray-700 drop-shadow-sm">
-                          <span className="font-medium">Yetkili:</span> {school.manager}
+                          <span className="font-medium">Yetkili:</span> {school.manager_name}
                         </div>
                       )}
                     </div>

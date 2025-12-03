@@ -3,7 +3,8 @@ import { TransitionLink } from "@/components/transition-link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, ArrowLeft, Calendar, MapPin, User } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, User } from "lucide-react"
+import { AddVisitDialog } from "@/components/crm/add-visit-dialog"
 
 export default async function VisitsPage() {
   const supabase = await createClient()
@@ -13,11 +14,36 @@ export default async function VisitsPage() {
     .select(
       `
       *,
-      schools (name, neighborhood),
-      users!visits_visitor_id_fkey (name)
+      schools (id, name, neighborhood),
+      users!visits_visitor_id_fkey (id, name)
     `,
     )
     .order("visit_date", { ascending: false })
+
+  const { data: schools } = await supabase.from("schools").select("id, name").order("name")
+
+  const { data: users } = await supabase.from("users").select("id, name").eq("is_active", true).order("name")
+
+  const getStatusBadge = (status: string) => {
+    const colors: Record<string, string> = {
+      PLANNED: "bg-blue-100 text-blue-700",
+      COMPLETED: "bg-green-100 text-green-700",
+      CANCELLED: "bg-red-100 text-red-700",
+      POSTPONED: "bg-orange-100 text-orange-700",
+    }
+    return colors[status] || "bg-gray-100 text-gray-700"
+  }
+
+  const getVisitTypeName = (type: string) => {
+    const types: Record<string, string> = {
+      FIRST_CONTACT: "İlk Görüşme",
+      PRESENTATION: "Sunum",
+      DEMO: "Demo",
+      NEGOTIATION: "Görüşme",
+      FOLLOWUP: "Takip",
+    }
+    return types[type] || type
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -35,10 +61,7 @@ export default async function VisitsPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 drop-shadow-md mb-2">Ziyaret Takibi</h1>
             <p className="text-gray-700 drop-shadow-sm">Okul ziyaretlerini planlayın ve raporlayın</p>
           </div>
-          <Button size="lg" className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-lg w-full sm:w-auto">
-            <Plus className="w-5 h-5" />
-            Yeni Ziyaret Ekle
-          </Button>
+          <AddVisitDialog schools={schools || []} users={users || []} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -53,10 +76,8 @@ export default async function VisitsPage() {
                       </h3>
                     </div>
                     <div className="flex gap-2 mb-4 flex-wrap">
-                      <Badge className="bg-purple-100 text-purple-700">{visit.visit_type}</Badge>
-                      <Badge variant="outline" className="text-gray-700">
-                        {visit.status}
-                      </Badge>
+                      <Badge className="bg-purple-100 text-purple-700">{getVisitTypeName(visit.visit_type)}</Badge>
+                      <Badge className={getStatusBadge(visit.status)}>{visit.status}</Badge>
                     </div>
 
                     <div className="space-y-2 text-sm mb-4">
@@ -92,7 +113,6 @@ export default async function VisitsPage() {
               <Calendar className="w-16 h-16 mx-auto text-slate-300 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 drop-shadow-sm mb-2">Henüz ziyaret kaydı yok</h3>
               <p className="text-gray-700 drop-shadow-sm mb-4">İlk ziyaretinizi planlamak için başlayın</p>
-              <Button className="bg-blue-600 hover:bg-blue-700">Ziyaret Ekle</Button>
             </Card>
           )}
         </div>

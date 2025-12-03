@@ -3,7 +3,8 @@ import { TransitionLink } from "@/components/transition-link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Users, Settings, Plus } from "lucide-react"
+import { ArrowLeft, Users, Settings } from "lucide-react"
+import { AddUserDialog } from "@/components/crm/add-user-dialog"
 
 export default async function AdminPage() {
   const supabase = await createClient()
@@ -38,7 +39,6 @@ export default async function AdminPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Users Section */}
           <div className="lg:col-span-2">
             <Card className="p-6 bg-white shadow-lg">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -46,10 +46,7 @@ export default async function AdminPage() {
                   <Users className="w-6 h-6 text-slate-700" />
                   <h2 className="text-xl md:text-2xl font-bold text-gray-900 drop-shadow-sm">Kullanıcılar</h2>
                 </div>
-                <Button size="sm" className="gap-2 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
-                  <Plus className="w-4 h-4" />
-                  Kullanıcı Ekle
-                </Button>
+                <AddUserDialog />
               </div>
 
               <div className="space-y-3">
@@ -85,7 +82,6 @@ export default async function AdminPage() {
             </Card>
           </div>
 
-          {/* Settings Section */}
           <div>
             <Card className="p-6 bg-white shadow-lg">
               <div className="flex items-center gap-3 mb-6">

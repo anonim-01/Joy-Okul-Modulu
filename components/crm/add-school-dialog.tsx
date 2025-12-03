@@ -115,8 +115,9 @@ export function AddSchoolDialog() {
                     <SelectValue placeholder="Tür seçin" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Devlet">Devlet</SelectItem>
-                    <SelectItem value="Özel">Özel</SelectItem>
+                    <SelectItem value="PUBLIC">Devlet</SelectItem>
+                    <SelectItem value="PRIVATE">Özel</SelectItem>
+                    <SelectItem value="FOUNDATION">Vakıf</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -132,8 +133,12 @@ export function AddSchoolDialog() {
                     <SelectValue placeholder="Kategori seçin" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="basic">Temel Eğitim</SelectItem>
-                    <SelectItem value="high">Ortaöğretim</SelectItem>
+                    <SelectItem value="PRIMARY">İlkokul</SelectItem>
+                    <SelectItem value="MIDDLE">Ortaokul</SelectItem>
+                    <SelectItem value="HIGH">Lise</SelectItem>
+                    <SelectItem value="VOCATIONAL">Meslek Lisesi</SelectItem>
+                    <SelectItem value="UNIVERSITY">Üniversite</SelectItem>
+                    <SelectItem value="OTHER">Diğer</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -153,17 +158,26 @@ export function AddSchoolDialog() {
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="manager" className="text-gray-900 font-semibold">
-                Müdür Adı
-              </Label>
-              <Input id="manager" name="manager" placeholder="Örn: Ahmet Yılmaz" className="bg-white" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="manager_name" className="text-gray-900 font-semibold">
+                  Müdür Adı
+                </Label>
+                <Input id="manager_name" name="manager_name" placeholder="Örn: Ahmet Yılmaz" className="bg-white" />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="manager_phone" className="text-gray-900 font-semibold">
+                  Müdür Telefonu
+                </Label>
+                <Input id="manager_phone" name="manager_phone" placeholder="0532 XXX XX XX" className="bg-white" />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="phone" className="text-gray-900 font-semibold">
-                  Telefon
+                  Okul Telefonu
                 </Label>
                 <Input id="phone" name="phone" placeholder="0216 XXX XX XX" className="bg-white" />
               </div>

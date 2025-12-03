@@ -11,13 +11,14 @@ export async function addSchool(formData: FormData) {
     neighborhood: formData.get("neighborhood") as string,
     type: formData.get("type") as string,
     category: formData.get("category") as string,
-    manager: formData.get("manager") as string,
+    manager_name: formData.get("manager_name") as string,
+    manager_phone: formData.get("manager_phone") as string,
     phone: formData.get("phone") as string,
     email: formData.get("email") as string,
     address: formData.get("address") as string,
     student_count: Number.parseInt(formData.get("student_count") as string) || 0,
-    status: "new",
-    visit_status: "none",
+    status: "NEW",
+    visit_status: "NONE",
   }
 
   const { data, error } = await supabase.from("schools").insert([schoolData]).select()
@@ -30,7 +31,7 @@ export async function addSchool(formData: FormData) {
   return { success: true, data }
 }
 
-export async function updateSchool(id: number, formData: FormData) {
+export async function updateSchool(id: string, formData: FormData) {
   const supabase = await createClient()
 
   const schoolData = {
@@ -38,7 +39,8 @@ export async function updateSchool(id: number, formData: FormData) {
     neighborhood: formData.get("neighborhood") as string,
     type: formData.get("type") as string,
     category: formData.get("category") as string,
-    manager: formData.get("manager") as string,
+    manager_name: formData.get("manager_name") as string,
+    manager_phone: formData.get("manager_phone") as string,
     phone: formData.get("phone") as string,
     email: formData.get("email") as string,
     address: formData.get("address") as string,
@@ -59,7 +61,7 @@ export async function updateSchool(id: number, formData: FormData) {
   return { success: true, data }
 }
 
-export async function deleteSchool(id: number) {
+export async function deleteSchool(id: string) {
   const supabase = await createClient()
 
   const { error } = await supabase.from("schools").delete().eq("id", id)
