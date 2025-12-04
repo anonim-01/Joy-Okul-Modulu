@@ -39,7 +39,7 @@
 
   .app-content {
     flex: 1;
-    padding: 12px 12px 80px;
+    padding: 12px 12px 80px; /* Bottom nav için padding */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -92,66 +92,64 @@
 
   /* Bottom Navigation */
   .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 68px;
-    background: white;
-    border-top: 1px solid #e2e8f0;
-    /* Increased z-index to ensure it appears above all content */
-    z-index: 9999;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-    /* Added safe-area-inset for iPhone notch support */
-    padding-bottom: env(safe-area-inset-bottom);
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 68px !important;
+    background: white !important;
+    border-top: 1px solid #e2e8f0 !important;
+    z-index: 9999 !important;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   }
 
   .nav-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 0 8px;
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    height: 100% !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+    padding: 0 8px !important;
   }
 
   .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 12px;
-    text-decoration: none;
-    color: #94a3b8;
-    transition: color 0.2s;
-    border-radius: 12px;
-    min-width: 60px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px 12px !important;
+    text-decoration: none !important;
+    color: #94a3b8 !important;
+    transition: color 0.2s !important;
+    border-radius: 12px !important;
+    min-width: 60px !important;
   }
 
   .nav-item.active {
-    color: #7c3aed;
-    background: #f5f3ff;
+    color: #7c3aed !important;
+    background: #f5f3ff !important;
   }
 
   .nav-label {
-    font-size: 11px;
-    font-weight: 600;
-    margin-top: 4px;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    margin-top: 4px !important;
   }
 
   /* Typography */
   .page-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: #0f172a;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
   }
 
   .page-subtitle {
-    font-size: 12px;
-    color: #64748b;
-    font-weight: 500;
+    font-size: 12px !important;
+    color: #64748b !important;
+    font-weight: 500 !important;
   }
 
   /* Stat Cards */
@@ -160,29 +158,84 @@
   }
 
   .stat-value {
-    font-size: 24px;
-    font-weight: 900;
-    line-height: 1;
-    color: #0f172a;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    color: #0f172a !important;
   }
 
   .stat-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
   }
 
   /* Hide Scrollbar */
   .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
   }
 
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 }
 
 /* Remove all sidebar, desktop, and conflicting styles */
+
+/* Safe area için ek utility'ler */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  }
+  
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+  }
+  
+  /* Debug için */
+  .debug-border {
+    border: 1px solid red !important;
+  }
+  
+  .debug-border-green {
+    border: 1px solid green !important;
+  }
+  
+  .debug-border-blue {
+    border: 1px solid blue !important;
+  }
+}
+
+/* Önemli: Body overflow'u kontrol et */
+html, body {
+  overflow-x: hidden !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+/* Bottom nav için kesin görünürlük garantisi */
+.bottom-nav {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+/* Mobile için kesin görünürlük */
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex !important;
+  }
+  
+  /* Body'ye bottom nav için padding */
+  body.has-bottom-nav {
+    padding-bottom: 68px !important;
+  }
+}
