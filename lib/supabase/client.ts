@@ -11,7 +11,6 @@ export function createClient() {
   if (!url || !key) {
     const errorMsg =
       "Missing Supabase environment variables. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your Vercel project variables."
-    console.error("[v0]", errorMsg)
     throw new Error(errorMsg)
   }
 
