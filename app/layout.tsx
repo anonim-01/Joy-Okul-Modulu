@@ -24,13 +24,36 @@ export default function RootLayout({
       <body className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/20 text-gray-900 relative">
         <GsapProvider>
           <TransitionProvider>
-            {/* Ana içerik alanı - BottomNav için boşluk bırak */}
-            <main className="min-h-screen pb-20 md:pb-0 relative z-0">
+            {/* Ana içerik - bottom nav'ın üzerinde olmaması için */}
+            <main className="relative z-10">
               {children}
             </main>
             <Toaster position="top-center" />
           </TransitionProvider>
         </GsapProvider>
+        
+        {/* Bottom nav'ın her zaman en üstte olmasını sağla */}
+        <style jsx global>{`
+          /* Bottom nav için özel z-index garantisi */
+          .bottom-nav {
+            z-index: 99999 !important;
+          }
+          
+          /* Tüm overlay'leri bottom nav'ın altına it */
+          .transition-container,
+          .gsap-container,
+          [class*="overlay"],
+          [class*="modal"],
+          [class*="dialog"] {
+            z-index: auto !important;
+          }
+          
+          /* Body'nin bottom nav'ı kesmemesini sağla */
+          body {
+            overflow-x: hidden !important;
+            padding-bottom: 0 !important;
+          }
+        `}</style>
       </body>
     </html>
   )
