@@ -1,167 +1,166 @@
 "use client"
 
-import { useState } from "react"
+import { Card } from "@/components/ui/card"
 import { TransitionLink } from "@/components/transition-link"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Users, Settings, Database, Mail, Activity } from "lucide-react"
+import {
+  Users,
+  Settings,
+  Database,
+  Mail,
+  Activity,
+  Building2,
+  FileText,
+  Shield,
+  Bell,
+  Palette,
+  Globe,
+  ChevronRight,
+  ArrowLeft,
+} from "lucide-react"
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState("users")
+  const settingsCategories = [
+    {
+      title: "Kullanıcı Yönetimi",
+      description: "Kullanıcılar, roller ve yetkiler",
+      icon: Users,
+      color: "from-blue-500 to-blue-600",
+      href: "/crm/admin/users",
+      count: "12 kullanıcı",
+    },
+    {
+      title: "Sistem Ayarları",
+      description: "Genel yapılandırma ve ayarlar",
+      icon: Settings,
+      color: "from-purple-500 to-purple-600",
+      href: "/crm/admin/system",
+      count: "8 ayar",
+    },
+    {
+      title: "Veritabanı",
+      description: "CSV, XML, SQL yönetimi",
+      icon: Database,
+      color: "from-emerald-500 to-emerald-600",
+      href: "/crm/admin/database",
+      count: "Admin",
+    },
+    {
+      title: "Email Şablonları",
+      description: "Otomatik email düzenleme",
+      icon: Mail,
+      color: "from-orange-500 to-orange-600",
+      href: "/crm/admin/email",
+      count: "6 şablon",
+    },
+    {
+      title: "İşlem Logları",
+      description: "Sistem aktiviteleri",
+      icon: Activity,
+      color: "from-pink-500 to-pink-600",
+      href: "/crm/admin/logs",
+      count: "Canlı",
+    },
+    {
+      title: "Kurum Ayarları",
+      description: "Şirket bilgileri ve logo",
+      icon: Building2,
+      color: "from-cyan-500 to-cyan-600",
+      href: "/crm/admin/company",
+      count: "Profil",
+    },
+    {
+      title: "Raporlar",
+      description: "Sistem ve kullanım raporları",
+      icon: FileText,
+      color: "from-indigo-500 to-indigo-600",
+      href: "/crm/admin/reports",
+      count: "Detaylı",
+    },
+    {
+      title: "Güvenlik",
+      description: "Şifre politikaları ve 2FA",
+      icon: Shield,
+      color: "from-red-500 to-red-600",
+      href: "/crm/admin/security",
+      count: "Kritik",
+    },
+    {
+      title: "Bildirimler",
+      description: "Push ve email bildirimleri",
+      icon: Bell,
+      color: "from-yellow-500 to-yellow-600",
+      href: "/crm/admin/notifications",
+      count: "Aktif",
+    },
+    {
+      title: "Tema Ayarları",
+      description: "Renk ve görünüm düzenleme",
+      icon: Palette,
+      color: "from-fuchsia-500 to-fuchsia-600",
+      href: "/crm/admin/theme",
+      count: "Özelleştir",
+    },
+    {
+      title: "Dil ve Bölge",
+      description: "Çoklu dil ve zaman dilimi",
+      icon: Globe,
+      color: "from-teal-500 to-teal-600",
+      href: "/crm/admin/locale",
+      count: "3 dil",
+    },
+  ]
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-2">
-            <TransitionLink href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Ana Sayfa
-              </Button>
-            </TransitionLink>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-black drop-shadow-lg mb-2">Sistem Yönetimi</h1>
-          <p className="text-gray-800 drop-shadow-sm font-medium">Kullanıcılar, roller ve sistem ayarları</p>
+    <div className="space-y-3 pb-20">
+      <div className="flex items-center gap-2">
+        <TransitionLink href="/crm/dashboard">
+          <Button variant="ghost" size="sm" className="h-8 px-2">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+        </TransitionLink>
+        <div>
+          <h1 className="text-base sm:text-lg font-black text-black">Ayarlar</h1>
+          <p className="text-[10px] sm:text-xs text-gray-500">Sistem yönetimi ve yapılandırma</p>
         </div>
-
-        <Card className="bg-white shadow-xl border-2 border-gray-200">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full flex overflow-x-auto scrollbar-hide p-1 bg-gray-100 gap-1">
-              <TabsTrigger value="users" className="flex-shrink-0 text-[10px] sm:text-xs px-2 py-1.5 gap-1">
-                <Users className="w-3 h-3" />
-                <span>Kullanıcılar</span>
-              </TabsTrigger>
-              <TabsTrigger value="system" className="flex-shrink-0 text-[10px] sm:text-xs px-2 py-1.5 gap-1">
-                <Settings className="w-3 h-3" />
-                <span>Ayarlar</span>
-              </TabsTrigger>
-              <TabsTrigger value="email" className="flex-shrink-0 text-[10px] sm:text-xs px-2 py-1.5 gap-1">
-                <Mail className="w-3 h-3" />
-                <span>Email</span>
-              </TabsTrigger>
-              <TabsTrigger value="backup" className="flex-shrink-0 text-[10px] sm:text-xs px-2 py-1.5 gap-1">
-                <Database className="w-3 h-3" />
-                <span>Yedek</span>
-              </TabsTrigger>
-              <TabsTrigger value="logs" className="flex-shrink-0 text-[10px] sm:text-xs px-2 py-1.5 gap-1">
-                <Activity className="w-3 h-3" />
-                <span>Loglar</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="users" className="p-6">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">Kullanıcı Yönetimi</h2>
-              <p className="text-gray-700 mb-6">
-                Sistem kullanıcılarını yönetin, roller atayın ve yetkilendirme yapın.
-              </p>
-              <div className="space-y-4">
-                <Card className="p-4 bg-gray-50 shadow-md">
-                  <h3 className="font-bold text-black mb-2">Toplam Kullanıcılar</h3>
-                  <p className="text-3xl font-extrabold text-blue-600">12</p>
-                </Card>
-              </div>
-              <Button size="sm" className="mt-3 text-xs h-8 bg-blue-600">
-                + Kullanıcı Ekle
-              </Button>
-            </TabsContent>
-
-            <TabsContent value="system" className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">Sistem Ayarları</h2>
-              <p className="text-gray-700 mb-6">Genel sistem ayarlarını yapılandırın.</p>
-              <div className="space-y-4">
-                <Card className="p-4 bg-gray-50 shadow-md">
-                  <h3 className="font-bold text-black mb-2">Şirket Bilgileri</h3>
-                  <p className="text-gray-600">Şirket adı, logo ve iletişim bilgilerini güncelleyin.</p>
-                </Card>
-                <Card className="p-4 bg-gray-50 shadow-md">
-                  <h3 className="font-bold text-black mb-2">Genel Ayarlar</h3>
-                  <p className="text-gray-600">Dil, zaman dilimi ve para birimi ayarları.</p>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="email" className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">Email Şablonları</h2>
-              <p className="text-gray-700 mb-6">Otomatik email şablonlarını düzenleyin.</p>
-              <div className="space-y-4">
-                <Card className="p-4 bg-gray-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                  <h3 className="font-bold text-black mb-2">Hoş Geldiniz Email</h3>
-                  <p className="text-gray-600">Yeni kullanıcılar için hoş geldiniz mesajı.</p>
-                </Card>
-                <Card className="p-4 bg-gray-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                  <h3 className="font-bold text-black mb-2">Teklif Onayı</h3>
-                  <p className="text-gray-600">Teklif onaylandığında gönderilen email.</p>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="backup" className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">Yedekleme</h2>
-              <p className="text-gray-700 mb-6">Veritabanı yedekleme ve geri yükleme işlemleri.</p>
-              <div className="space-y-4">
-                <Card className="p-4 bg-gray-50 shadow-md">
-                  <h3 className="font-bold text-black mb-2">Otomatik Yedekleme</h3>
-                  <p className="text-gray-600 mb-4">Son yedekleme: 2 gün önce</p>
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md">Şimdi Yedekle</Button>
-                </Card>
-                <Card className="p-4 bg-gray-50 shadow-md">
-                  <h3 className="font-bold text-black mb-2">Yedekleri Geri Yükle</h3>
-                  <p className="text-gray-600 mb-4">Önceki yedeklemelerden birini geri yükleyin.</p>
-                  <Button variant="outline" className="shadow-md bg-transparent">
-                    Yedekleri Görüntüle
-                  </Button>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="logs" className="p-6 space-y-3">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">İşlem Logları</h2>
-              <p className="text-gray-700 mb-6">Sistem aktivitelerini ve kullanıcı işlemlerini görüntüleyin.</p>
-              <div className="space-y-3">
-                <Card className="p-4 bg-gray-50 shadow-sm">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-bold text-black">Yeni kurum eklendi</p>
-                      <p className="text-sm text-gray-600">Kullanıcı: Admin • 5 dakika önce</p>
-                    </div>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
-                      Başarılı
-                    </span>
-                  </div>
-                </Card>
-                <Card className="p-4 bg-gray-50 shadow-sm">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-bold text-black">Teklif güncellendi</p>
-                      <p className="text-sm text-gray-600">Kullanıcı: Satış Ekibi • 1 saat önce</p>
-                    </div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">
-                      Güncelleme
-                    </span>
-                  </div>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="reports" className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold text-black drop-shadow-md mb-4">Sistem Raporları</h2>
-              <p className="text-gray-700 mb-6">Detaylı sistem ve kullanım raporlarını görüntüleyin.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="p-4 bg-gray-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                  <h3 className="font-bold text-black mb-2">Aylık Özet</h3>
-                  <p className="text-gray-600">Bu ayki toplam aktiviteler ve istatistikler.</p>
-                </Card>
-                <Card className="p-4 bg-gray-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
-                  <h3 className="font-bold text-black mb-2">Kullanıcı Aktiviteleri</h3>
-                  <p className="text-gray-600">Kullanıcı bazlı işlem raporları.</p>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </Card>
       </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        {settingsCategories.map((category) => {
+          const Icon = category.icon
+          return (
+            <TransitionLink key={category.href} href={category.href}>
+              <Card
+                className={`bg-gradient-to-br ${category.color} text-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95 h-full`}
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex items-start justify-between mb-2">
+                    <Icon className="w-6 h-6 opacity-90" />
+                    <ChevronRight className="w-4 h-4 opacity-70" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xs font-bold mb-1 line-clamp-1">{category.title}</h3>
+                    <p className="text-[10px] opacity-80 line-clamp-2">{category.description}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-white/20">
+                    <span className="text-[9px] font-medium opacity-90">{category.count}</span>
+                  </div>
+                </div>
+              </Card>
+            </TransitionLink>
+          )
+        })}
+      </div>
+
+      <Card className="p-3 rounded-xl shadow-md bg-gradient-to-br from-gray-800 to-gray-900 text-white">
+        <div className="flex items-center gap-2 mb-2">
+          <Shield className="w-4 h-4" />
+          <h2 className="text-sm font-bold">Admin Erişimi</h2>
+        </div>
+        <p className="text-xs opacity-90">
+          Bu bölüm yalnızca sistem yöneticileri tarafından erişilebilir. Tüm değişiklikler loglanır.
+        </p>
+      </Card>
     </div>
   )
 }

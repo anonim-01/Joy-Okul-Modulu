@@ -75,22 +75,25 @@ export function AddSchoolDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="gap-2 bg-black hover:bg-gray-800 text-white shadow-xl">
+        <Button
+          size="lg"
+          className="gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-xl rounded-xl font-bold"
+        >
           <Plus className="w-5 h-5" />
           Yeni Kurum Ekle
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl border-2 border-gray-200">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-extrabold text-black drop-shadow-md">Yeni Kurum Ekle</DialogTitle>
-          <DialogDescription className="text-gray-800 font-semibold drop-shadow-sm">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl border-2 border-gray-200 rounded-2xl">
+        <DialogHeader className="text-center">
+          <DialogTitle className="text-2xl font-black text-gray-900">Yeni Kurum Ekle</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600 font-medium">
             Yeni bir kurum eklemek için aşağıdaki formu doldurun.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name" className="text-black font-extrabold drop-shadow-md text-base">
+              <Label htmlFor="name" className="text-gray-900 font-bold text-sm">
                 Kurum Adı *
               </Label>
               <Input
@@ -98,7 +101,7 @@ export function AddSchoolDialog() {
                 name="name"
                 placeholder="Örn: Pendik Anadolu Lisesi"
                 required
-                className="bg-white border-gray-300 shadow-sm text-black font-medium"
+                className="bg-white border-gray-300 shadow-sm text-gray-900 font-medium rounded-xl"
               />
             </div>
 
@@ -262,14 +265,14 @@ export function AddSchoolDialog() {
               variant="outline"
               onClick={() => setOpen(false)}
               disabled={loading}
-              className="w-full sm:w-auto border-2 border-gray-300 text-black font-bold shadow-md"
+              className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 font-bold shadow-md rounded-xl hover:bg-gray-50"
             >
               İptal
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-black hover:bg-gray-800 text-white w-full sm:w-auto shadow-xl font-bold"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white w-full sm:w-auto shadow-xl font-bold rounded-xl"
             >
               {loading ? (
                 <>

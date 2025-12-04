@@ -56,12 +56,15 @@ CREATE POLICY "Allow all access to contacts"
 
 -- Updated at trigger
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+SET search_path = public, pg_temp
+AS $$
 BEGIN
-    NEW.updated_at = NOW();
+    NEW.updated_at = pg_catalog.now();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 DROP TRIGGER IF EXISTS update_fc_contacts_updated_at ON fc_contacts;
 CREATE TRIGGER update_fc_contacts_updated_at

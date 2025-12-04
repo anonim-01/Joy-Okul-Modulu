@@ -6,8 +6,8 @@ import { Toaster } from "@/components/ui/sonner"
 
 export default function CRMLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="app-container">
-      <div className="app-content">{children}</div>
+    <div className="app-container relative">
+      <div className="app-content pb-20">{children}</div>
       <BottomNav />
       <Toaster position="top-center" />
     </div>

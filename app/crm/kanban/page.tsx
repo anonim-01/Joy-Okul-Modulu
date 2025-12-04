@@ -1,24 +1,13 @@
 "use client"
-
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
-  Plus,
-  GripVertical,
-  School,
   User,
-  Search,
-  TrendingUp,
-  Building2,
-  Target,
   ChevronLeft,
   ChevronRight,
-  X,
   Sparkles,
   Phone,
   Users,
@@ -26,8 +15,10 @@ import {
   MessageCircle,
   CheckCircle2,
   XCircle,
+  MapPin,
+  ArrowRight,
 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { supabase } from "@/lib/supabase/client"
 import { toast } from "sonner"
 
 interface SchoolCard {
@@ -39,352 +30,271 @@ interface SchoolCard {
   status?: string
 }
 
-const defaultColumns = [
+const categories = [
   {
     id: "NEW",
     title: "Yeni",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
     icon: Sparkles,
-    badgeBg: "bg-blue-700",
   },
   {
     id: "CONTACTED",
     title: "İletişim",
-    color: "bg-gradient-to-br from-amber-400 to-amber-500",
-    textColor: "text-amber-900",
+    bgColor: "bg-gradient-to-br from-amber-500 to-yellow-500",
     icon: Phone,
-    badgeBg: "bg-amber-600",
   },
   {
     id: "VISITED",
     title: "Ziyaret",
-    color: "bg-gradient-to-br from-purple-500 to-purple-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-purple-500 to-purple-600",
     icon: Users,
-    badgeBg: "bg-purple-700",
   },
   {
     id: "PROPOSAL_SENT",
     title: "Teklif",
-    color: "bg-gradient-to-br from-orange-500 to-orange-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-orange-500 to-orange-600",
     icon: FileText,
-    badgeBg: "bg-orange-700",
   },
   {
     id: "NEGOTIATING",
     title: "Görüşme",
-    color: "bg-gradient-to-br from-pink-500 to-pink-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-pink-500 to-pink-600",
     icon: MessageCircle,
-    badgeBg: "bg-pink-700",
   },
   {
     id: "WON",
     title: "Kazanıldı",
-    color: "bg-gradient-to-br from-emerald-500 to-emerald-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-emerald-500 to-emerald-600",
     icon: CheckCircle2,
-    badgeBg: "bg-emerald-700",
   },
   {
     id: "LOST",
     title: "Kayıp",
-    color: "bg-gradient-to-br from-red-500 to-red-600",
-    textColor: "text-white",
+    bgColor: "bg-gradient-to-br from-red-500 to-red-600",
     icon: XCircle,
-    badgeBg: "bg-red-700",
   },
 ]
+
+const allStatuses = categories
 
 export default function KanbanPage() {
   const [schools, setSchools] = useState<Record<string, SchoolCard[]>>({})
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterType, setFilterType] = useState("all")
-  const [draggedCard, setDraggedCard] = useState<string | null>(null)
-  const [columns, setColumns] = useState(defaultColumns)
-  const [draggedColumn, setDraggedColumn] = useState<number | null>(null)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false)
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string | null>(null)
 
   useEffect(() => {
     loadSchools()
-  }, [filterType])
+  }, [])
 
   const loadSchools = async () => {
-    const supabase = createClient()
-    let query = supabase.from("schools").select("*").order("created_at", { ascending: false })
-    if (filterType !== "all") query = query.eq("type", filterType)
-    const { data } = await query
-    if (data) {
-      const grouped = columns.reduce(
-        (acc, col) => {
-          acc[col.id] = data.filter((school: any) => school.status === col.id)
-          return acc
-        },
-        {} as Record<string, SchoolCard[]>,
-      )
-      setSchools(grouped)
+    try {
+      console.log("[v0] Loading schools from Supabase...")
+      const { data, error } = await supabase.from("schools").select("*").order("created_at", { ascending: false })
+
+      if (error) {
+        console.error("[v0] Error loading schools:", error)
+        toast.error("Veriler yüklenirken hata oluştu")
+        setLoading(false)
+        return
+      }
+
+      console.log("[v0] Loaded schools:", data?.length || 0)
+
+      if (data) {
+        const grouped = allStatuses.reduce(
+          (acc, status) => {
+            acc[status.id] = data.filter((school: any) => school.status === status.id)
+            return acc
+          },
+          {} as Record<string, SchoolCard[]>,
+        )
+        setSchools(grouped)
+        console.log("[v0] Grouped schools:", grouped)
+      }
+    } catch (error) {
+      console.error("[v0] Exception loading schools:", error)
+      toast.error("Beklenmeyen bir hata oluştu")
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const moveCard = async (schoolId: string, toStatus: string) => {
-    const supabase = createClient()
-    const { error } = await supabase.from("schools").update({ status: toStatus }).eq("id", schoolId)
-    if (error) toast.error("Hata!")
-    else {
-      toast.success("Güncellendi")
-      loadSchools()
+    try {
+      console.log("[v0] Moving school", schoolId, "to status", toStatus)
+      const { error } = await supabase.from("schools").update({ status: toStatus }).eq("id", schoolId)
+
+      if (error) {
+        console.error("[v0] Error moving card:", error.message)
+        toast.error(`Kart taşınırken hata oluştu: ${error.message}`)
+        return
+      }
+
+      console.log("[v0] Card moved successfully")
+      toast.success("Başarıyla taşındı")
+      setMoveDialogOpen(false)
+      setSelectedSchoolId(null)
+      await loadSchools()
+    } catch (error: any) {
+      console.error("[v0] Exception moving card:", error)
+      toast.error("Beklenmeyen bir hata oluştu")
     }
   }
 
-  const handleDragStart = (e: React.DragEvent, schoolId: string) => {
-    setDraggedCard(schoolId)
-    e.dataTransfer.effectAllowed = "move"
+  const getCategoryCount = (categoryId: string) => {
+    return schools[categoryId]?.length || 0
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = "move"
-  }
-
-  const handleDrop = (e: React.DragEvent, targetStatus: string) => {
-    e.preventDefault()
-    if (draggedCard) {
-      moveCard(draggedCard, targetStatus)
-      setDraggedCard(null)
-    }
-  }
-
-  const handleColumnDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedColumn(index)
-    e.dataTransfer.effectAllowed = "move"
-  }
-
-  const handleColumnDrop = (e: React.DragEvent, targetIndex: number) => {
-    e.preventDefault()
-    if (draggedColumn !== null && draggedColumn !== targetIndex) {
-      const newColumns = [...columns]
-      const [removed] = newColumns.splice(draggedColumn, 1)
-      newColumns.splice(targetIndex, 0, removed)
-      setColumns(newColumns)
-    }
-    setDraggedColumn(null)
-  }
-
-  const scroll = (dir: number) => {
-    scrollContainerRef.current?.scrollBy({ left: dir * 250, behavior: "smooth" })
-  }
-
-  const filteredSchools = Object.keys(schools).reduce(
-    (acc, status) => {
-      acc[status] = schools[status]?.filter((s) => s.name.toLowerCase().includes(searchTerm.toLowerCase())) || []
-      return acc
-    },
-    {} as Record<string, SchoolCard[]>,
-  )
-
-  const totalSchools = Object.values(schools).reduce((sum, arr) => sum + (arr?.length || 0), 0)
-  const wonCount = schools["WON"]?.length || 0
-  const lostCount = schools["LOST"]?.length || 0
-  const winRate = wonCount + lostCount > 0 ? ((wonCount / (wonCount + lostCount)) * 100).toFixed(0) : "0"
-
-  if (loading)
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
         <div className="text-sm font-bold animate-pulse">Yükleniyor...</div>
       </div>
     )
+  }
 
-  return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="page-title">Kanban Board</h1>
-        <p className="page-subtitle">Satış sürecinizi yönetin</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="stat-card bg-gradient-to-br from-blue-500 to-blue-600 text-white p-3 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="stat-label text-[9px] sm:text-[10px] font-medium opacity-90">Toplam</p>
-              <p className="stat-value text-lg sm:text-xl font-black">{totalSchools}</p>
-            </div>
-            <Building2 className="w-8 h-8 opacity-50" />
+  if (!selectedCategory) {
+    return (
+      <div className="space-y-4 pb-20 px-4">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Button
+            size="lg"
+            disabled
+            className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+          <div className="text-center min-w-[120px]">
+            <h2 className="text-xl font-black text-gray-900">← Kaydır →</h2>
           </div>
-        </Card>
-        <Card className="stat-card bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-3 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="stat-label text-[9px] sm:text-[10px] font-medium opacity-90">Kazanıldı</p>
-              <p className="stat-value text-lg sm:text-xl font-black">{wonCount}</p>
-            </div>
-            <TrendingUp className="w-8 h-8 opacity-50" />
-          </div>
-        </Card>
-        <Card className="stat-card bg-gradient-to-br from-red-500 to-red-600 text-white p-3 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="stat-label text-[9px] sm:text-[10px] font-medium opacity-90">Kaybedildi</p>
-              <p className="stat-value text-lg sm:text-xl font-black">{lostCount}</p>
-            </div>
-            <X className="w-8 h-8 opacity-50" />
-          </div>
-        </Card>
-        <Card className="stat-card bg-gradient-to-br from-purple-500 to-purple-600 text-white p-3 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="stat-label text-[9px] sm:text-[10px] font-medium opacity-90">Başarı</p>
-              <p className="stat-value text-lg sm:text-xl font-black">{winRate}%</p>
-            </div>
-            <Target className="w-8 h-8 opacity-50" />
-          </div>
-        </Card>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="flex gap-2">
-        <div className="flex-1 relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-          <Input
-            placeholder="Ara..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8 h-9 text-xs border-gray-200 bg-white rounded-lg shadow-sm"
-          />
+          <Button
+            size="lg"
+            disabled
+            className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
         </div>
-        <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-24 h-9 text-xs border-gray-200 bg-white rounded-lg shadow-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tümü</SelectItem>
-            <SelectItem value="PUBLIC">Devlet</SelectItem>
-            <SelectItem value="PRIVATE">Özel</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
-      {/* Scroll Controls */}
-      <div className="flex items-center justify-center gap-4">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => scroll(-1)}
-          className="h-10 px-5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-xl font-bold"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
-        <span className="text-base sm:text-lg font-black text-gray-800 px-3">← Kaydır →</span>
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => scroll(1)}
-          className="h-10 px-5 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-xl font-bold"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </Button>
-      </div>
-
-      {/* Kanban Columns */}
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {columns.map((column, index) => {
-          const IconComponent = column.icon
-          return (
-            <div
-              key={column.id}
-              draggable
-              onDragStart={(e) => handleColumnDragStart(e, index)}
-              onDragOver={handleDragOver}
-              onDrop={(e) => {
-                if (draggedColumn !== null) handleColumnDrop(e, index)
-                else handleDrop(e, column.id)
-              }}
-              className={`flex-shrink-0 snap-start w-[200px] sm:w-[240px] ${draggedColumn === index ? "opacity-50 scale-95" : ""} transition-all`}
-            >
-              <Card className="overflow-hidden rounded-xl shadow-xl border-0">
-                <div className={`px-3 py-2.5 ${column.color} cursor-move`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <IconComponent className={`w-4 h-4 ${column.textColor}`} />
-                      <span className={`font-bold text-xs ${column.textColor}`}>{column.title}</span>
+        <div className="grid grid-cols-1 gap-4">
+          {categories.map((category) => {
+            const IconComponent = category.icon
+            const count = getCategoryCount(category.id)
+            return (
+              <Card
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`${category.bgColor} p-6 rounded-2xl shadow-xl border-0 cursor-pointer active:scale-95 transition-transform`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+                      <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <Badge className={`${column.badgeBg} text-white text-[10px] px-1.5 py-0`}>
-                      {filteredSchools[column.id]?.length || 0}
-                    </Badge>
+                    <div>
+                      <h3 className="text-2xl font-black text-white">{category.title}</h3>
+                      <p className="text-sm text-white/80">{count} kurum</p>
+                    </div>
                   </div>
-                </div>
-
-                {/* Cards Container */}
-                <div className="p-2 space-y-2 min-h-[150px] max-h-[300px] overflow-y-auto bg-gray-50">
-                  {filteredSchools[column.id]?.map((school) => (
-                    <Card
-                      key={school.id}
-                      draggable
-                      onDragStart={(e) => {
-                        e.stopPropagation()
-                        handleDragStart(e, school.id)
-                      }}
-                      className="p-2.5 bg-white shadow-md hover:shadow-lg transition-all cursor-move border-0 rounded-lg active:scale-[0.98]"
-                    >
-                      <div className="flex items-start gap-1.5">
-                        <GripVertical className="w-3 h-3 text-gray-300 mt-0.5 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-bold text-black text-xs mb-1 line-clamp-2">{school.name}</h3>
-                          {school.neighborhood && (
-                            <div className="flex items-center gap-1 text-gray-500 text-[10px] mb-1">
-                              <School className="w-2.5 h-2.5" />
-                              <span className="truncate">{school.neighborhood}</span>
-                            </div>
-                          )}
-                          {school.manager_name && (
-                            <div className="flex items-center gap-1 text-gray-500 text-[10px] mb-1.5">
-                              <User className="w-2.5 h-2.5" />
-                              <span className="truncate">{school.manager_name}</span>
-                            </div>
-                          )}
-                          {column.id !== "WON" && column.id !== "LOST" && (
-                            <Button
-                              size="sm"
-                              className="w-full h-7 text-[10px] bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-md font-semibold shadow"
-                              onClick={() => {
-                                const nextIdx = columns.findIndex((c) => c.id === column.id) + 1
-                                if (nextIdx < columns.length) moveCard(school.id, columns[nextIdx].id)
-                              }}
-                            >
-                              İlerlet →
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                  {(!filteredSchools[column.id] || filteredSchools[column.id].length === 0) && (
-                    <div className="text-center py-6 text-gray-400 text-xs">
-                      <IconComponent className="w-6 h-6 mx-auto mb-1.5 opacity-30" />
-                      <p>Boş</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Add Button */}
-                <div className="p-1.5 border-t border-gray-100 bg-white">
-                  <Button variant="ghost" className="w-full text-gray-500 hover:text-black text-xs h-7 rounded-md">
-                    <Plus className="w-3 h-3 mr-1" /> Ekle
-                  </Button>
+                  <Badge className="bg-white/30 text-white text-xl px-5 py-2 font-bold border-0 backdrop-blur-sm">
+                    {count}
+                  </Badge>
                 </div>
               </Card>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
+    )
+  }
+
+  const currentCategory = categories.find((c) => c.id === selectedCategory)!
+  const IconComponent = currentCategory.icon
+  const categorySchools = schools[selectedCategory] || []
+
+  return (
+    <div className="space-y-4 pb-20 px-4">
+      <div className="flex items-center justify-between mb-4">
+        <Button onClick={() => setSelectedCategory(null)} variant="outline" className="rounded-xl font-semibold">
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Geri
+        </Button>
+        <h2 className="text-lg font-black text-gray-900">{currentCategory.title}</h2>
+        <div className="w-20" />
+      </div>
+
+      <div className="space-y-3">
+        {categorySchools.length > 0 ? (
+          categorySchools.map((school) => (
+            <Card
+              key={school.id}
+              className="p-4 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all border border-gray-100"
+            >
+              <h4 className="text-base font-bold text-gray-900 mb-3 leading-tight">{school.name}</h4>
+
+              <div className="space-y-2 mb-4">
+                {school.neighborhood && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm">{school.neighborhood}</span>
+                  </div>
+                )}
+                {school.manager_name && (
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <User className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm">{school.manager_name}</span>
+                  </div>
+                )}
+              </div>
+
+              <Button
+                onClick={() => {
+                  setSelectedSchoolId(school.id)
+                  setMoveDialogOpen(true)
+                }}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl h-11 font-bold text-sm shadow-md"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                İlerlet
+              </Button>
+            </Card>
+          ))
+        ) : (
+          <Card className="p-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+            <IconComponent className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p className="text-gray-500 font-medium mb-1">Boş</p>
+            <p className="text-sm text-gray-400">Henüz {currentCategory.title.toLowerCase()} kurumu yok</p>
+          </Card>
+        )}
+      </div>
+
+      <Dialog open={moveDialogOpen} onOpenChange={setMoveDialogOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold">Nereye Taşınsın?</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-3 mt-4">
+            {allStatuses
+              .filter((status) => status.id !== selectedCategory)
+              .map((status) => {
+                const StatusIcon = status.icon
+                return (
+                  <Button
+                    key={status.id}
+                    onClick={() => selectedSchoolId && moveCard(selectedSchoolId, status.id)}
+                    variant="outline"
+                    className="h-14 justify-start gap-3 rounded-xl hover:bg-blue-50 hover:border-blue-300"
+                  >
+                    <StatusIcon className="w-5 h-5 text-gray-600" />
+                    <span className="font-semibold text-gray-900">{status.title}</span>
+                  </Button>
+                )
+              })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
