@@ -18,6 +18,25 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
+    // Debug için viewport bilgisi
+    console.log("📱 Viewport height:", window.innerHeight)
+    console.log("📄 Document height:", document.documentElement.clientHeight)
+    
+    // Bottom nav için body padding ekle
+    document.body.style.paddingBottom = "0"
+    document.body.style.marginBottom = "0"
+    
+    // Tüm transform'ları kontrol et
+    document.querySelectorAll('*').forEach(el => {
+      const styles = window.getComputedStyle(el)
+      if (styles.transform !== 'none') {
+        console.log("⚠️ Transform found on:", el.tagName, styles.transform)
+      }
+      if (styles.position === 'fixed' || styles.position === 'absolute') {
+        console.log("📍 Position:", styles.position, "on", el.tagName)
+      }
+    })
+
     const fetchStats = async () => {
       try {
         const [
@@ -59,29 +78,116 @@ export default function DashboardPage() {
     }
 
     fetchStats()
+
+    // Bottom nav pozisyonunu düzelt
+    const fixBottomNav = () => {
+      const nav = document.querySelector('.bottom-nav')
+      if (nav) {
+        // Pozisyonu sıfırla
+        const htmlNav = nav as HTMLElement
+        htmlNav.style.bottom = '0px'
+        htmlNav.style.transform = 'none'
+        htmlNav.style.translate = 'none'
+        
+        // Parent'ları kontrol et
+        let parent = nav.parentElement
+        while (parent) {
+          const styles = window.getComputedStyle(parent)
+          if (styles.transform !== 'none' || styles.translate !== 'none') {
+            (parent as HTMLElement).style.transform = 'none'
+            ;(parent as HTMLElement).style.translate = 'none'
+          }
+          parent = parent.parentElement
+        }
+      }
+    }
+
+    // İlk düzeltme
+    setTimeout(fixBottomNav, 100)
+    
+    // Periyodik kontrol
+    const interval = setInterval(fixBottomNav, 1000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
+    <div style={{
+      minHeight: 'calc(100vh - 68px)', // Bottom nav yüksekliği çıkar
+      background: 'linear-gradient(to bottom right, #f8fafc, #ffffff, #eff6ff)',
+      position: 'relative'
+    }}>
       {/* Header Section with Greeting and Date */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-4 mb-4">
+      <div style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '16px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+        border: '1px solid rgba(226, 232, 240, 0.5)',
+        padding: '16px',
+        marginBottom: '16px'
+      }}>
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Merhaba, Ahmet 👋</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Bugün {new Date().toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: 900,
+            color: '#0f172a'
+          }}>
+            Merhaba, Ahmet 👋
+          </h1>
+          <p style={{
+            fontSize: '14px',
+            color: '#64748b',
+            marginTop: '4px'
+          }}>
+            Bugün {new Date().toLocaleDateString("tr-TR", { 
+              day: "numeric", 
+              month: "long", 
+              year: "numeric" 
+            })}
           </p>
         </div>
       </div>
 
-      <div className="pb-4">
-        <h2 className="text-xl font-black text-gray-900 mb-4">Dashboard</h2>
-        <p className="text-sm text-gray-600 mb-6">
+      <div style={{ paddingBottom: '4px' }}>
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: 900,
+          color: '#0f172a',
+          marginBottom: '16px'
+        }}>
+          Dashboard
+        </h2>
+        <p style={{
+          fontSize: '14px',
+          color: '#64748b',
+          marginBottom: '24px'
+        }}>
           {new Date().toLocaleDateString("tr-TR", { day: "numeric" })} Aralık{" "}
           {new Date().toLocaleDateString("tr-TR", { year: "numeric" })}
         </p>
 
         {/* Dashboard Cards with Proper Stats */}
         <CRMDashboardClient stats={stats} />
+      </div>
+      
+      {/* Debug banner */}
+      <div style={{
+        position: 'fixed',
+        top: 10,
+        right: 10,
+        background: '#ef4444',
+        color: 'white',
+        padding: '6px 12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+        zIndex: 9998
+      }}>
+        🐛 BOTTOM NAV TEST
       </div>
     </div>
   )

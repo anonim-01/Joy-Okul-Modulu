@@ -239,3 +239,46 @@ html, body {
     padding-bottom: 68px !important;
   }
 }
+/* globals.css - EN SONUNA EKLEYİN */
+
+/* !!! BOTTOM NAV YÜKSEKLİK FİX !!! */
+.bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 68px !important;
+  background: white !important;
+  border-top: 1px solid #e2e8f0 !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  padding: 0 8px !important;
+  /* Safe area fix - maximum değer sınırla */
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px) !important;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05) !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+/* Tüm transform/translate'leri sıfırla */
+.bottom-nav,
+.bottom-nav * {
+  transform: none !important;
+  translate: none !important;
+  inset: auto !important;
+}
+
+/* Mobile görünüm için düzeltme */
+@media (max-width: 768px) {
+  .bottom-nav {
+    bottom: 0 !important;
+    transform: translateY(0) !important;
+  }
+  
+  /* Body padding'i düzelt */
+  body {
+    padding-bottom: 0 !important;
+  }
+}

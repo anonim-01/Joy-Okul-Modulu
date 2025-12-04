@@ -46,6 +46,46 @@ export function CRMDashboardClient({
       audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3")
       audioRef.current.volume = 0.3
     }
+    
+    // Bottom nav için özel kontrol
+    const checkBottomNav = () => {
+      const nav = document.querySelector('.bottom-nav')
+      if (nav) {
+        // Pozisyonu kesin olarak ayarla
+        const htmlNav = nav as HTMLElement
+        htmlNav.style.cssText = `
+          position: fixed !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          height: 68px !important;
+          background: white !important;
+          border-top: 1px solid #e2e8f0 !important;
+          z-index: 2147483647 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-around !important;
+          padding: 0 8px !important;
+          box-shadow: 0 -2px 8px rgba(0,0,0,0.05) !important;
+          transform: none !important;
+          translate: none !important;
+        `
+        
+        // Viewport kontrolü
+        const rect = nav.getBoundingClientRect()
+        const viewportHeight = window.innerHeight
+        console.log('Nav position check:', {
+          navBottom: rect.bottom,
+          viewportHeight,
+          difference: rect.bottom - viewportHeight
+        })
+      }
+    }
+    
+    // Periyodik kontrol
+    const interval = setInterval(checkBottomNav, 500)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const { schoolsCount, visitsCount, proposalsCount, wonCount, lostCount, todayVisitsCount, recentVisits } = stats
@@ -65,7 +105,12 @@ export function CRMDashboardClient({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{
+      paddingBottom: '20px', // Bottom nav için minimum padding
+      minHeight: 'calc(100vh - 180px)', // Header + bottom nav için yükseklik
+      position: 'relative',
+      zIndex: 1 // Bottom nav'ın altında kalacak şekilde
+    }}>
       {/* Main 2x2 Grid */}
       <div className="grid grid-cols-2 gap-3">
         {/* Total Institutions Card */}
@@ -73,7 +118,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-blue-100 via-blue-50 to-white rounded-2xl shadow-md border border-blue-200/50 transition-all duration-500 hover:shadow-lg hover:scale-[1.02] ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "0ms" }}
+          style={{ animationDelay: "0ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-blue-200/50">
@@ -90,7 +135,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-emerald-100 via-emerald-50 to-white rounded-2xl shadow-md border border-emerald-200/50 transition-all duration-500 hover:shadow-lg hover:scale-[1.02] ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "100ms" }}
+          style={{ animationDelay: "100ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-emerald-200/50">
@@ -107,7 +152,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-purple-100 via-purple-50 to-white rounded-2xl shadow-md border border-purple-200/50 transition-all duration-500 hover:shadow-lg hover:scale-[1.02] ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "200ms" }}
+          style={{ animationDelay: "200ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-purple-200/50">
@@ -124,7 +169,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-2xl shadow-md border border-orange-200/50 transition-all duration-500 hover:shadow-lg hover:scale-[1.02] ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "300ms" }}
+          style={{ animationDelay: "300ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-orange-200/50">
@@ -143,7 +188,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-teal-100 via-teal-50 to-white rounded-2xl shadow-md border border-teal-200/50 transition-all duration-500 hover:shadow-lg ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "400ms" }}
+          style={{ animationDelay: "400ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-teal-200/50">
@@ -158,7 +203,7 @@ export function CRMDashboardClient({
           className={`p-4 bg-gradient-to-br from-pink-100 via-pink-50 to-white rounded-2xl shadow-md border border-pink-200/50 transition-all duration-500 hover:shadow-lg ${
             mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
           }`}
-          style={{ animationDelay: "500ms" }}
+          style={{ animationDelay: "500ms", transform: 'none' }}
         >
           <div className="flex items-center justify-between mb-2">
             <div className="p-2.5 rounded-xl bg-pink-200/50">
@@ -175,7 +220,7 @@ export function CRMDashboardClient({
         className={`p-5 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl shadow-md border border-indigo-200/50 transition-all duration-500 ${
           mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
         }`}
-        style={{ animationDelay: "600ms" }}
+        style={{ animationDelay: "600ms", transform: 'none' }}
       >
         <h3 className="text-base font-black text-gray-900 mb-3 flex items-center gap-2">
           <PieChart className="w-5 h-5 text-indigo-600" />
@@ -194,7 +239,7 @@ export function CRMDashboardClient({
         className={`p-5 bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 rounded-2xl shadow-md border border-violet-200/50 transition-all duration-500 ${
           mounted ? "animate-in fade-in-50 slide-in-from-bottom-4" : "opacity-0"
         }`}
-        style={{ animationDelay: "700ms" }}
+        style={{ animationDelay: "700ms", transform: 'none' }}
       >
         <h3 className="text-base font-black text-gray-900 mb-3 flex items-center gap-2">
           <Activity className="w-5 h-5 text-violet-600" />
@@ -230,6 +275,14 @@ export function CRMDashboardClient({
           )}
         </div>
       </Card>
+      
+      {/* Bottom nav için boşluk */}
+      <div style={{ 
+        height: '80px',
+        width: '100%',
+        pointerEvents: 'none',
+        visibility: 'hidden'
+      }} />
     </div>
   )
 }
