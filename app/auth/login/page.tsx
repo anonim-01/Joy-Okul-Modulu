@@ -25,11 +25,15 @@ export default function Page() {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
-      if (error) throw error
+
+      if (error) {
+        throw error
+      }
+
       router.push("/crm/dashboard")
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Bir hata oluştu")

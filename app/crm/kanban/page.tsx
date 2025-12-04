@@ -90,17 +90,13 @@ export default function KanbanPage() {
 
   const loadSchools = async () => {
     try {
-      console.log("[v0] Loading schools from Supabase...")
       const { data, error } = await supabase.from("schools").select("*").order("created_at", { ascending: false })
 
       if (error) {
         console.error("[v0] Error loading schools:", error)
-        toast.error("Veriler yüklenirken hata oluştu")
         setLoading(false)
         return
       }
-
-      console.log("[v0] Loaded schools:", data?.length || 0)
 
       if (data) {
         const grouped = allStatuses.reduce(
@@ -111,11 +107,9 @@ export default function KanbanPage() {
           {} as Record<string, SchoolCard[]>,
         )
         setSchools(grouped)
-        console.log("[v0] Grouped schools:", grouped)
       }
     } catch (error) {
       console.error("[v0] Exception loading schools:", error)
-      toast.error("Beklenmeyen bir hata oluştu")
     } finally {
       setLoading(false)
     }
@@ -123,7 +117,6 @@ export default function KanbanPage() {
 
   const moveCard = async (schoolId: string, toStatus: string) => {
     try {
-      console.log("[v0] Moving school", schoolId, "to status", toStatus)
       const { error } = await supabase.from("schools").update({ status: toStatus }).eq("id", schoolId)
 
       if (error) {
@@ -132,7 +125,6 @@ export default function KanbanPage() {
         return
       }
 
-      console.log("[v0] Card moved successfully")
       toast.success("Başarıyla taşındı")
       setMoveDialogOpen(false)
       setSelectedSchoolId(null)

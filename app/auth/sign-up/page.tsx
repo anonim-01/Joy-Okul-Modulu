@@ -39,20 +39,22 @@ export default function Page() {
     try {
       const supabase = createClient()
 
+      const redirectUrl = process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/auth/callback`
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo:
-            process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/crm/dashboard`,
+          emailRedirectTo: redirectUrl,
         },
       })
 
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       router.push("/auth/sign-up-success")
     } catch (error: unknown) {
-      console.error("Sign-up error:", error)
       setError(error instanceof Error ? error.message : "Bir hata oluştu")
     } finally {
       setIsLoading(false)
