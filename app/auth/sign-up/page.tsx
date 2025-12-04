@@ -21,18 +21,31 @@ export default function Page() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    const supabase = createClient()
     setIsLoading(true)
     setError(null)
+
+    console.log("[v0] Sign-up started for email:", email)
 
     if (password !== repeatPassword) {
       setError("Şifreler eşleşmiyor")
       setIsLoading(false)
+      console.log("[v0] Password mismatch")
+      return
+    }
+
+    if (password.length < 6) {
+      setError("Şifre en az 6 karakter olmalıdır")
+      setIsLoading(false)
+      console.log("[v0] Password too short")
       return
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log("[v0] Creating Supabase client...")
+      const supabase = createClient()
+
+      console.log("[v0] Calling signUp...")
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -40,9 +53,15 @@ export default function Page() {
             process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/crm/dashboard`,
         },
       })
+
+      console.log("[v0] Sign-up response:", { data, error })
+
       if (error) throw error
+
+      console.log("[v0] Sign-up successful, redirecting...")
       router.push("/auth/sign-up-success")
     } catch (error: unknown) {
+      console.error("[v0] Sign-up error:", error)
       setError(error instanceof Error ? error.message : "Bir hata oluştu")
     } finally {
       setIsLoading(false)
@@ -82,10 +101,12 @@ export default function Page() {
                     id="password"
                     type="password"
                     required
+                    minLength={6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-gray-800 border-gray-700 text-white"
                   />
+                  <p className="text-xs text-gray-500">En az 6 karakter</p>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="repeat-password" className="text-gray-300">
@@ -95,6 +116,7 @@ export default function Page() {
                     id="repeat-password"
                     type="password"
                     required
+                    minLength={6}
                     value={repeatPassword}
                     onChange={(e) => setRepeatPassword(e.target.value)}
                     className="bg-gray-800 border-gray-700 text-white"
