@@ -99,8 +99,11 @@
     height: 68px;
     background: white;
     border-top: 1px solid #e2e8f0;
-    z-index: 1000;
+    /* Increased z-index to ensure it appears above all content */
+    z-index: 9999;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    /* Added safe-area-inset for iPhone notch support */
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .nav-container {
