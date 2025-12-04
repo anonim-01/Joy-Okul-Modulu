@@ -70,6 +70,16 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      // Bottom Navigation için yeni spacing değerleri ekleyin
+      spacing: {
+        'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+        'safe-top': 'env(safe-area-inset-top, 0px)',
+        'safe-left': 'env(safe-area-inset-left, 0px)',
+        'safe-right': 'env(safe-area-inset-right, 0px)',
+        'bottom-nav': '4rem', // Alt navigasyon yüksekliği
+        'bottom-nav-mobile': '3.5rem',
+      },
+      // Yeni keyframes ve animasyonlar
       keyframes: {
         "accordion-down": {
           from: {
@@ -135,6 +145,27 @@ const config: Config = {
             transform: "translateX(0)",
           },
         },
+        // Bottom nav için yeni animasyonlar
+        "slide-up-bottom-nav": {
+          from: {
+            transform: "translateY(100%)",
+            opacity: "0",
+          },
+          to: {
+            transform: "translateY(0)",
+            opacity: "1",
+          },
+        },
+        "slide-down-bottom-nav": {
+          from: {
+            transform: "translateY(0)",
+            opacity: "1",
+          },
+          to: {
+            transform: "translateY(100%)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -145,9 +176,45 @@ const config: Config = {
         "slide-in-from-bottom": "slide-in-from-bottom 0.3s ease-out",
         "slide-in-from-left": "slide-in-from-left 0.3s ease-out",
         "slide-in-from-right": "slide-in-from-right 0.3s ease-out",
+        // Bottom nav için yeni animasyonlar
+        "slide-up-bottom-nav": "slide-up-bottom-nav 0.3s ease-out",
+        "slide-down-bottom-nav": "slide-down-bottom-nav 0.3s ease-out",
+      },
+      // Yeni utility class'lar için extend
+      zIndex: {
+        'bottom-nav': '100',
+      },
+      screens: {
+        'xs': '475px',
+        '3xl': '1920px',
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Yeni plugin: safe area için
+    function ({ addUtilities }: { addUtilities: any }) {
+      addUtilities({
+        '.pb-safe': {
+          'padding-bottom': 'env(safe-area-inset-bottom, 0px)',
+        },
+        '.pt-safe': {
+          'padding-top': 'env(safe-area-inset-top, 0px)',
+        },
+        '.pl-safe': {
+          'padding-left': 'env(safe-area-inset-left, 0px)',
+        },
+        '.pr-safe': {
+          'padding-right': 'env(safe-area-inset-right, 0px)',
+        },
+        '.mb-safe': {
+          'margin-bottom': 'env(safe-area-inset-bottom, 0px)',
+        },
+        '.mt-safe': {
+          'margin-top': 'env(safe-area-inset-top, 0px)',
+        },
+      })
+    },
+  ],
 }
 export default config

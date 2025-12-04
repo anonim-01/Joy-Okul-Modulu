@@ -21,10 +21,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={inter.className}>
-      <body className="bg-gradient-to-br from-gray-50 via-white to-blue-50/20 text-gray-900">
+      <body className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/20 text-gray-900 relative">
         <GsapProvider>
           <TransitionProvider>
-            <main>{children}</main>
+            {/* Ana içerik alanı - BottomNav için boşluk bırak */}
+            <main className="min-h-screen pb-20 md:pb-0 relative z-0">
+              {children}
+            </main>
             <Toaster position="top-center" />
           </TransitionProvider>
         </GsapProvider>
