@@ -24,27 +24,21 @@ export default function Page() {
     setIsLoading(true)
     setError(null)
 
-    console.log("[v0] Sign-up started for email:", email)
-
     if (password !== repeatPassword) {
       setError("Şifreler eşleşmiyor")
       setIsLoading(false)
-      console.log("[v0] Password mismatch")
       return
     }
 
     if (password.length < 6) {
       setError("Şifre en az 6 karakter olmalıdır")
       setIsLoading(false)
-      console.log("[v0] Password too short")
       return
     }
 
     try {
-      console.log("[v0] Creating Supabase client...")
       const supabase = createClient()
 
-      console.log("[v0] Calling signUp...")
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -54,14 +48,11 @@ export default function Page() {
         },
       })
 
-      console.log("[v0] Sign-up response:", { data, error })
-
       if (error) throw error
 
-      console.log("[v0] Sign-up successful, redirecting...")
       router.push("/auth/sign-up-success")
     } catch (error: unknown) {
-      console.error("[v0] Sign-up error:", error)
+      console.error("Sign-up error:", error)
       setError(error instanceof Error ? error.message : "Bir hata oluştu")
     } finally {
       setIsLoading(false)
