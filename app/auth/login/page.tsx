@@ -34,7 +34,10 @@ export default function Page() {
         throw error
       }
 
-      router.push("/crm/dashboard")
+      if (data?.session) {
+        router.push("/crm/dashboard")
+        router.refresh()
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "Bir hata oluştu")
     } finally {

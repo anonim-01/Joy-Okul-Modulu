@@ -152,28 +152,28 @@ export default function KanbanPage() {
 
   if (!selectedCategory) {
     return (
-      <div className="space-y-4 pb-20 px-4">
-        <div className="flex items-center justify-center gap-3 mb-6">
+      <div className="space-y-2 pb-20 px-3">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <Button
-            size="lg"
+            size="sm"
             disabled
-            className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
+            className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
-          <div className="text-center min-w-[120px]">
-            <h2 className="text-xl font-black text-gray-900">← Kaydır →</h2>
+          <div className="text-center min-w-[100px]">
+            <h2 className="text-lg font-black text-gray-900">← Kaydır →</h2>
           </div>
           <Button
-            size="lg"
+            size="sm"
             disabled
-            className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
+            className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg opacity-50"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-2">
           {categories.map((category) => {
             const IconComponent = category.icon
             const count = getCategoryCount(category.id)
@@ -181,19 +181,19 @@ export default function KanbanPage() {
               <Card
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`${category.bgColor} p-6 rounded-2xl shadow-xl border-0 cursor-pointer active:scale-95 transition-transform`}
+                className={`${category.bgColor} p-3 rounded-xl shadow-lg border-0 cursor-pointer active:scale-95 transition-transform`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
-                      <IconComponent className="w-7 h-7 text-white" />
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                      <IconComponent className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-white">{category.title}</h3>
-                      <p className="text-sm text-white/80">{count} kurum</p>
+                      <h3 className="text-lg font-black text-white">{category.title}</h3>
+                      <p className="text-xs text-white/80">{count} kurum</p>
                     </div>
                   </div>
-                  <Badge className="bg-white/30 text-white text-xl px-5 py-2 font-bold border-0 backdrop-blur-sm">
+                  <Badge className="bg-white/30 text-white text-base px-3 py-1 font-bold border-0 backdrop-blur-sm">
                     {count}
                   </Badge>
                 </div>

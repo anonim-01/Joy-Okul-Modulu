@@ -9,17 +9,13 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      console.log("[v0] Auth callback page loaded")
-
       try {
         const supabase = createClient()
 
         // Get the code from URL
         const code = new URLSearchParams(window.location.search).get("code")
-        console.log("[v0] Auth code present:", !!code)
 
         if (code) {
-          // Exchange the code for a session
           const { error } = await supabase.auth.exchangeCodeForSession(code)
 
           if (error) {
@@ -29,7 +25,6 @@ export default function AuthCallbackPage() {
           }
         }
 
-        // Check if user is authenticated
         const {
           data: { session },
           error: sessionError,
@@ -42,10 +37,9 @@ export default function AuthCallbackPage() {
         }
 
         if (session) {
-          console.log("[v0] Session found, redirecting to dashboard")
           router.push("/crm/dashboard")
+          router.refresh()
         } else {
-          console.log("[v0] No session, redirecting to login")
           router.push("/auth/login")
         }
       } catch (error) {
