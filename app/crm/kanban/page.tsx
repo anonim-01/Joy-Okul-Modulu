@@ -125,10 +125,13 @@ export default function KanbanPage() {
         return
       }
 
-      toast.success("Başarıyla taşındı")
       setMoveDialogOpen(false)
       setSelectedSchoolId(null)
-      await loadSchools()
+
+      setTimeout(async () => {
+        await loadSchools()
+        toast.success("Başarıyla taşındı")
+      }, 0)
     } catch (error: any) {
       console.error("[v0] Exception moving card:", error)
       toast.error("Beklenmeyen bir hata oluştu")
