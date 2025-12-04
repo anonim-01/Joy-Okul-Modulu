@@ -20,25 +20,37 @@ export default function Page() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log("[v0] Login attempt started for email:", email)
+
     const supabase = createClient()
+    console.log("[v0] Supabase client created")
+
     setIsLoading(true)
     setError(null)
 
     try {
+      console.log("[v0] Calling signInWithPassword...")
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
+
+      console.log("[v0] Login response:", { hasSession: !!data?.session, error: error?.message })
 
       if (error) {
         throw error
       }
 
       if (data?.session) {
+        console.log("[v0] Session exists, redirecting to dashboard")
         router.push("/crm/dashboard")
         router.refresh()
+      } else {
+        console.log("[v0] No session returned after login")
+        setError("Giriş başarısız, lütfen tekrar deneyin")
       }
     } catch (error: unknown) {
+      console.error("[v0] Login error:", error)
       setError(error instanceof Error ? error.message : "Bir hata oluştu")
     } finally {
       setIsLoading(false)
